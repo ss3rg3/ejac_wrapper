@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.ss3rg3</groupId>
-    <artifactId>ejac_helpers</artifactId>
+    <artifactId>ejac_wrapper</artifactId>
     <version>0.0.1</version>
 
     <properties>
@@ -16,14 +16,44 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-elasticsearch</artifactId>
+            <version>5.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
-            <version>8.14.1</version>
+            <version>8.13.4</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.17.0</version>
+        </dependency>
+
+
+        <!-- ================================================================================= -->
+        <!-- TESTS-->
+        <!-- ================================================================================= -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId> <!-- Disables slf4j warnings -->
+            <version>2.0.9</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -31,7 +61,7 @@
         <repository>
             <id>ss3rg3</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/ss3rg3/ejac_helpers</url>
+            <url>https://maven.pkg.github.com/ss3rg3/ejac_wrapper</url>
         </repository>
     </distributionManagement>
 
