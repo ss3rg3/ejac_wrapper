@@ -12,7 +12,6 @@ services:
       - ES_JAVA_OPTS=-Xms2g -Xmx2g
       - STACK_VERSION=8.13.4
       - LICENSE=basic
-      - MEM_LIMIT=1073741824
       - bootstrap.memory_lock=true
       - cluster.name=ejac-cluster
       - discovery.type=single-node
