@@ -1,13 +1,10 @@
 package ejachelpers.mapping;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ejachelpers._testutils.ComplexModel;
 import ejachelpers._testutils.NoModel;
 import ejachelpers._testutils.SimpleModel;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import static ejachelpers._testutils.TestUtils.minifyJson;
@@ -91,7 +88,7 @@ class EjacMappingTest {
 
     @Test
     void asInputStream() throws Exception {
-        try(InputStream stream = EjacMapping.asInputStream(SimpleModel.class)) {
+        try (InputStream stream = EjacMapping.asInputStream(SimpleModel.class)) {
             String asString = EjacMapping.asString(SimpleModel.class);
             String fromStream = new String(stream.readAllBytes());
             assertEquals(asString, fromStream);
