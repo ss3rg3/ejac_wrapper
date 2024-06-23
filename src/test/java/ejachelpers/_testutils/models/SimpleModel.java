@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ejachelpers._testutils;
+package ejachelpers._testutils.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;

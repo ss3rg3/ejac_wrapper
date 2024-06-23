@@ -3,9 +3,9 @@ package ejachelpers.indices;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
 import ejachelpers._testutils.EjacClientFactory;
-import ejachelpers._testutils.SimpleModel;
+import ejachelpers._testutils.models.SimpleModel;
 import ejachelpers._testutils.TestUtils;
-import ejachelpers._testutils.UpdatedSimpleModel;
+import ejachelpers._testutils.models.UpdatedSimpleModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package ejachelpers._testutils;
+package ejachelpers._testutils.models;
 
 public class NoModel {
 

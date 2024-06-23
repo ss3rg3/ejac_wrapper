@@ -3,6 +3,9 @@ package ejachelpers.mapping;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
 import ejachelpers._testutils.*;
+import ejachelpers._testutils.models.ComplexModel;
+import ejachelpers._testutils.models.NoModel;
+import ejachelpers._testutils.models.SimpleModel;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
