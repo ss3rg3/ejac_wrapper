@@ -24,6 +24,8 @@ import java.util.List;
 
 public class SimpleModel {
 
+    public static final String INDEX_NAME = "simple_model_index";
+
     @Id
     private String id;
 

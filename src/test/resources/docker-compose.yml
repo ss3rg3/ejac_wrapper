@@ -15,7 +15,6 @@ services:
       - bootstrap.memory_lock=true
       - cluster.name=ejac-cluster
       - discovery.type=single-node
-      - xpack.security.http.ssl.enabled=false
     ports:
       - 9200:9200
     networks:

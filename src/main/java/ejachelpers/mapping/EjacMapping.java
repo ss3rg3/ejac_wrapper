@@ -15,11 +15,11 @@ public class EjacMapping {
     private static final MappingBuilder mappingBuilder = new MappingBuilder(converter);
 
     public static String asString(Class<?> clazz) {
-        return mappingBuilder.buildPropertyMapping(clazz);
+        return "{\"mappings\":" + mappingBuilder.buildPropertyMapping(clazz) + "}";
     }
 
     public static InputStream asInputStream(Class<?> clazz) {
-        return new ByteArrayInputStream(mappingBuilder.buildPropertyMapping(clazz).getBytes(Charset.defaultCharset()));
+        return new ByteArrayInputStream(asString(clazz).getBytes(Charset.defaultCharset()));
     }
 
 }
