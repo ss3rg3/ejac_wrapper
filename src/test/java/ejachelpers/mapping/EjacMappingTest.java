@@ -18,7 +18,7 @@ class EjacMappingTest {
 
     @Test
     void noModel() {
-        String mapping = EjacMapping.asString(NoModel.class);
+        String mapping = EjacMappingUtil.asString(NoModel.class);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -36,7 +36,7 @@ class EjacMappingTest {
 
     @Test
     void simpleModel() {
-        String mapping = EjacMapping.asString(SimpleModel.class);
+        String mapping = EjacMappingUtil.asString(SimpleModel.class);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -63,7 +63,7 @@ class EjacMappingTest {
 
     @Test
     void complexModel() {
-        String mapping = EjacMapping.asString(ComplexModel.class);
+        String mapping = EjacMappingUtil.asString(ComplexModel.class);
         System.out.println(mapping);
         assertEquals(minifyJson("""
                 {
@@ -138,8 +138,8 @@ class EjacMappingTest {
 
     @Test
     void asInputStream() throws Exception {
-        try (InputStream stream = EjacMapping.asInputStream(SimpleModel.class)) {
-            String asString = EjacMapping.asString(SimpleModel.class);
+        try (InputStream stream = EjacMappingUtil.asInputStream(SimpleModel.class)) {
+            String asString = EjacMappingUtil.asString(SimpleModel.class);
             String fromStream = new String(stream.readAllBytes());
             assertEquals(asString, fromStream);
         }
@@ -147,7 +147,7 @@ class EjacMappingTest {
 
     @Test
     void mappingInIndexSimpleModel() {
-        Map<String, Property> properties = recreateIndexGetProperties(SimpleModel.INDEX_NAME, SimpleModel.class, esc);
+        Map<String, Property> properties = recreateIndexGetProperties(SimpleModel.INDEX_NAME, SimpleModel.class);
         assertEquals("Property: {\"type\":\"text\"}", properties.get("arrayField").toString());
         assertEquals("Property: {\"type\":\"integer\"}", properties.get("integerField").toString());
         assertEquals("Property: {\"type\":\"keyword\",\"doc_values\":false,\"index\":false}", properties.get("_class").toString());
@@ -157,7 +157,7 @@ class EjacMappingTest {
 
     @Test
     void mappingInIndexComplexModel() {
-        Map<String, Property> properties = recreateIndexGetProperties(ComplexModel.INDEX_NAME, ComplexModel.class, esc);
+        Map<String, Property> properties = recreateIndexGetProperties(ComplexModel.INDEX_NAME, ComplexModel.class);
         assertEquals("Property: {\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"text\",\"index\":false},\"_class\":{\"type\":\"keyword\",\"doc_values\":false,\"index\":false},\"age\":{\"type\":\"integer\"}}}",
                 properties.get("objectField").toString());
         assertEquals("Property: {\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"text\",\"store\":true},\"description\":{\"type\":\"text\",\"analyzer\":\"default\",\"search_analyzer\":\"standard\"},\"_class\":{\"type\":\"keyword\",\"doc_values\":false,\"index\":false}}}",
@@ -167,12 +167,12 @@ class EjacMappingTest {
         assertEquals(4, properties.size());
     }
 
-    private static Map<String, Property> recreateIndexGetProperties(String indexName, Class<?> clazz, ElasticsearchClient esc) {
+    private static Map<String, Property> recreateIndexGetProperties(String indexName, Class<?> clazz) {
         try {
             TestUtils.deleteIndex(esc, indexName);
             esc.indices().create(req -> req
                     .index(indexName)
-                    .withJson(EjacMapping.asInputStream(clazz))
+                    .withJson(EjacMappingUtil.asInputStream(clazz))
             );
             return esc.indices().getMapping(req ->
                             req.index(indexName)).result()

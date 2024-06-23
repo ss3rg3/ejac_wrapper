@@ -8,7 +8,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-public class EjacMapping {
+/**
+ * Utility class to generate Elasticsearch mapping via Spring Data Elasticsearch.
+ */
+public class EjacMappingUtil {
 
     private static final SimpleElasticsearchMappingContext mappingContext = new SimpleElasticsearchMappingContext();
     private static final MappingElasticsearchConverter converter = new MappingElasticsearchConverter(mappingContext);
