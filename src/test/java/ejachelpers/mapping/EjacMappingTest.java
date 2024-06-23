@@ -18,7 +18,7 @@ class EjacMappingTest {
 
     @Test
     void noModel() {
-        String mapping = EjacMappingUtil.asString(NoModel.class);
+        String mapping = EjacMappingUtil.asString(NoModel.class, true);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -36,7 +36,7 @@ class EjacMappingTest {
 
     @Test
     void simpleModel() {
-        String mapping = EjacMappingUtil.asString(SimpleModel.class);
+        String mapping = EjacMappingUtil.asString(SimpleModel.class, true);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -63,7 +63,7 @@ class EjacMappingTest {
 
     @Test
     void complexModel() {
-        String mapping = EjacMappingUtil.asString(ComplexModel.class);
+        String mapping = EjacMappingUtil.asString(ComplexModel.class, true);
         System.out.println(mapping);
         assertEquals(minifyJson("""
                 {
@@ -138,8 +138,8 @@ class EjacMappingTest {
 
     @Test
     void asInputStream() throws Exception {
-        try (InputStream stream = EjacMappingUtil.asInputStream(SimpleModel.class)) {
-            String asString = EjacMappingUtil.asString(SimpleModel.class);
+        try (InputStream stream = EjacMappingUtil.asInputStream(SimpleModel.class, true)) {
+            String asString = EjacMappingUtil.asString(SimpleModel.class, true);
             String fromStream = new String(stream.readAllBytes());
             assertEquals(asString, fromStream);
         }
@@ -169,14 +169,12 @@ class EjacMappingTest {
 
     private static Map<String, Property> recreateIndexGetProperties(String indexName, Class<?> clazz) {
         try {
-            TestUtils.deleteIndex(esc, indexName);
+            TestUtils.tryToDeleteIndex(indexName, esc);
             esc.indices().create(req -> req
                     .index(indexName)
-                    .withJson(EjacMappingUtil.asInputStream(clazz))
+                    .withJson(EjacMappingUtil.asInputStream(clazz, true))
             );
-            return esc.indices().getMapping(req ->
-                            req.index(indexName)).result()
-                    .values().iterator().next().mappings().properties();
+            return TestUtils.getMappingProperties(indexName, esc);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

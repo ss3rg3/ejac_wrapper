@@ -17,12 +17,21 @@ public class EjacMappingUtil {
     private static final MappingElasticsearchConverter converter = new MappingElasticsearchConverter(mappingContext);
     private static final MappingBuilder mappingBuilder = new MappingBuilder(converter);
 
-    public static String asString(Class<?> clazz) {
-        return "{\"mappings\":" + mappingBuilder.buildPropertyMapping(clazz) + "}";
+    /**
+     * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
+     */
+    public static String asString(Class<?> clazz, boolean wrapInMappings) {
+        if (wrapInMappings) {
+            return "{\"mappings\":" + mappingBuilder.buildPropertyMapping(clazz) + "}";
+        }
+        return mappingBuilder.buildPropertyMapping(clazz);
     }
 
-    public static InputStream asInputStream(Class<?> clazz) {
-        return new ByteArrayInputStream(asString(clazz).getBytes(Charset.defaultCharset()));
+    /**
+     * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
+     */
+    public static InputStream asInputStream(Class<?> clazz, boolean wrapInMappings) {
+        return new ByteArrayInputStream(asString(clazz, wrapInMappings).getBytes(Charset.defaultCharset()));
     }
 
 }
