@@ -22,7 +22,7 @@
 
 - [ ] How to scroll
 
-- [ ] How to count docs in an index
+- [ ] How to count docs in an index. With search & size=0 it stops at 10k. Use aggregation?
 
   
 
