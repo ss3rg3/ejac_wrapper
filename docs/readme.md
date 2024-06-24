@@ -14,6 +14,16 @@
 
 - [ ] How to start Elasticsearch (before running tests)
 
+- [ ] How to do a partial update
+
+- [ ] How to use the BulkIngester
+
+- [ ] How to create a custom analyzer
+
+- [ ] How to scroll
+
+- [ ] How to count docs in an index
+
   
 
 # Import

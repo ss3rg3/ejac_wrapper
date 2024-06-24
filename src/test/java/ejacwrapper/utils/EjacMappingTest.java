@@ -67,7 +67,6 @@ class EjacMappingTest {
     @Test
     void complexModel() {
         String mapping = EjacUtils.mappingAsString(ComplexModel.class, true);
-        System.out.println(mapping);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
