@@ -1,18 +1,18 @@
-package ejachelpers.mapping;
+package ejacwrapper.utils;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
-import ejachelpers._testutils.*;
-import ejachelpers._testutils.models.ComplexModel;
-import ejachelpers._testutils.models.NoModel;
-import ejachelpers._testutils.models.SimpleModel;
+import ejacwrapper._testutils.*;
+import ejacwrapper._testutils.models.ComplexModel;
+import ejacwrapper._testutils.models.NoModel;
+import ejacwrapper._testutils.models.SimpleModel;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import static ejachelpers._testutils.TestUtils.minifyJson;
+import static ejacwrapper._testutils.TestUtils.minifyJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EjacMappingTest {
@@ -21,7 +21,7 @@ class EjacMappingTest {
 
     @Test
     void noModel() {
-        String mapping = EjacMappingUtil.asString(NoModel.class, true);
+        String mapping = EjacUtils.mappingAsString(NoModel.class, true);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -39,7 +39,7 @@ class EjacMappingTest {
 
     @Test
     void simpleModel() {
-        String mapping = EjacMappingUtil.asString(SimpleModel.class, true);
+        String mapping = EjacUtils.mappingAsString(SimpleModel.class, true);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -66,7 +66,7 @@ class EjacMappingTest {
 
     @Test
     void complexModel() {
-        String mapping = EjacMappingUtil.asString(ComplexModel.class, true);
+        String mapping = EjacUtils.mappingAsString(ComplexModel.class, true);
         System.out.println(mapping);
         assertEquals(minifyJson("""
                 {
@@ -141,8 +141,8 @@ class EjacMappingTest {
 
     @Test
     void asInputStream() throws Exception {
-        try (InputStream stream = EjacMappingUtil.asInputStream(SimpleModel.class, true)) {
-            String asString = EjacMappingUtil.asString(SimpleModel.class, true);
+        try (InputStream stream = EjacUtils.mappingAsInputStream(SimpleModel.class, true)) {
+            String asString = EjacUtils.mappingAsString(SimpleModel.class, true);
             String fromStream = new String(stream.readAllBytes());
             assertEquals(asString, fromStream);
         }
@@ -175,7 +175,7 @@ class EjacMappingTest {
             TestUtils.tryToDeleteIndex(indexName, esc);
             esc.indices().create(req -> req
                     .index(indexName)
-                    .withJson(EjacMappingUtil.asInputStream(clazz, true))
+                    .withJson(EjacUtils.mappingAsInputStream(clazz, true))
             );
             return TestUtils.getMappingProperties(indexName, esc);
         } catch (IOException e) {

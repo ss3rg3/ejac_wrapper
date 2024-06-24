@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ejachelpers._testutils.models;
+package ejacwrapper._testutils.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -22,18 +22,15 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.List;
 
-public class UpdatedSimpleModel {
+public class SimpleModel {
 
     public static final String INDEX_NAME = "simple_model_index";
 
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, searchAnalyzer = "standard")
-    private String stringField;
-
     @Field(type = FieldType.Text)
-    private String newField;
+    private String stringField;
 
     @Field(type = FieldType.Integer)
     private int integerField;

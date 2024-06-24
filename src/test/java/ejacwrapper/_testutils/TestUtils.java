@@ -1,4 +1,4 @@
-package ejachelpers._testutils;
+package ejacwrapper._testutils;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;

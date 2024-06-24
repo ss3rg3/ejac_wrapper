@@ -1,11 +1,11 @@
-package ejachelpers.indices;
+package ejacwrapper.core;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
-import ejachelpers._testutils.EjacClientFactory;
-import ejachelpers._testutils.models.SimpleModel;
-import ejachelpers._testutils.TestUtils;
-import ejachelpers._testutils.models.UpdatedSimpleModel;
+import ejacwrapper._testutils.EjacClientFactory;
+import ejacwrapper._testutils.models.SimpleModel;
+import ejacwrapper._testutils.TestUtils;
+import ejacwrapper._testutils.models.UpdatedSimpleModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -13,10 +13,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EjacIndicesTest {
+class EjacWrapperTest {
 
     private static final ElasticsearchClient esc = EjacClientFactory.create();
-    private static final EjacIndices ejacIndices = new EjacIndices(esc);
+    private static final EjacWrapper ejacIndices = new EjacWrapper(esc);
 
     @Test
     void createIndexOrUpdateMapping() throws Exception {

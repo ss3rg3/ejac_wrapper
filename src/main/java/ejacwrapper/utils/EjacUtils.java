@@ -1,4 +1,4 @@
-package ejachelpers.mapping;
+package ejacwrapper.utils;
 
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.index.MappingBuilder;
@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 /**
  * Utility class to generate Elasticsearch mapping via Spring Data Elasticsearch.
  */
-public class EjacMappingUtil {
+public class EjacUtils {
 
     private static final SimpleElasticsearchMappingContext mappingContext = new SimpleElasticsearchMappingContext();
     private static final MappingElasticsearchConverter converter = new MappingElasticsearchConverter(mappingContext);
@@ -20,7 +20,7 @@ public class EjacMappingUtil {
     /**
      * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
      */
-    public static String asString(Class<?> clazz, boolean wrapInMappings) {
+    public static String mappingAsString(Class<?> clazz, boolean wrapInMappings) {
         if (wrapInMappings) {
             return "{\"mappings\":" + mappingBuilder.buildPropertyMapping(clazz) + "}";
         }
@@ -30,8 +30,8 @@ public class EjacMappingUtil {
     /**
      * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
      */
-    public static InputStream asInputStream(Class<?> clazz, boolean wrapInMappings) {
-        return new ByteArrayInputStream(asString(clazz, wrapInMappings).getBytes(Charset.defaultCharset()));
+    public static InputStream mappingAsInputStream(Class<?> clazz, boolean wrapInMappings) {
+        return new ByteArrayInputStream(mappingAsString(clazz, wrapInMappings).getBytes(Charset.defaultCharset()));
     }
 
 }

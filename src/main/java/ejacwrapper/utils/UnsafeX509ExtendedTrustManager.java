@@ -1,4 +1,4 @@
-package ejachelpers._testutils;
+package ejacwrapper.utils;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedTrustManager;
@@ -11,10 +11,6 @@ public final class UnsafeX509ExtendedTrustManager extends X509ExtendedTrustManag
     private static final X509Certificate[] EMPTY_CERTIFICATES = new X509Certificate[0];
 
     private UnsafeX509ExtendedTrustManager() {}
-
-    public static X509ExtendedTrustManager getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void checkClientTrusted(X509Certificate[] certificates, String authType) {

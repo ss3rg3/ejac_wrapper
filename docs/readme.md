@@ -10,7 +10,11 @@
 
   - [ ] [compatibility matrix](https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/versions.html)
 
-    
+- [ ] How to ignore certs (move class to main package)
+
+- [ ] How to start Elasticsearch (before running tests)
+
+  
 
 # Import
 
