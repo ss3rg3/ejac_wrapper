@@ -2,20 +2,14 @@ package ejacwrapper.crud;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
-import co.elastic.clients.elasticsearch._helpers.bulk.BulkListener;
-import co.elastic.clients.elasticsearch.core.BulkRequest;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import ejacwrapper._testutils.CustomBulkListener;
 import ejacwrapper._testutils.EjacClientFactory;
 import ejacwrapper._testutils.TestUtils;
 import ejacwrapper._testutils.models.RandomDataModel;
 import ejacwrapper.core.EjacWrapper;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -26,14 +20,13 @@ public class BulkIngesterTest {
 
     private static final ElasticsearchClient esClient = EjacClientFactory.create();
     private static final EjacWrapper ejacWrapper = new EjacWrapper(esClient);
-    private static final Logger logger = LoggerFactory.getLogger(BulkIngesterTest.class);
+    private static final AtomicInteger documentCounter = new AtomicInteger(0);
+    private static final AtomicInteger requestCounter = new AtomicInteger(0);
     private static final BulkIngester<Void> ingester = BulkIngester.of(b -> b
             .client(esClient)
             .maxOperations(10)
-            .listener(new CustomBulkListener())
+            .listener(new CustomBulkListener(documentCounter, requestCounter))
     );
-    private static final AtomicInteger documentCounter = new AtomicInteger(0);
-    private static final AtomicInteger requestCounter = new AtomicInteger(0);
 
     @Test
     void indexMultipleDocuments() throws Exception {
@@ -67,32 +60,5 @@ public class BulkIngesterTest {
 
     }
 
-    private static class CustomBulkListener implements BulkListener<Void> {
-        @Override
-        public void beforeBulk(long executionId, BulkRequest request, List<Void> contexts) {
-        }
-
-        @Override
-        public void afterBulk(long executionId, BulkRequest request, List<Void> contexts, BulkResponse response) {
-            // The request was accepted, but may contain failed items.
-            // The "context" list gives the file name for each bulk item.
-            logger.info("Bulk request " + executionId + " completed. Took " + response.took() + "ms, with " + response.items().size() + " items.");
-            requestCounter.incrementAndGet();
-            documentCounter.addAndGet(response.items().size());
-            for (int i = 0; i < contexts.size(); i++) {
-                BulkResponseItem item = response.items().get(i);
-                if (item.error() != null) {
-                    // Inspect the failure cause
-                    logger.error("Failed to index file " + contexts.get(i) + " - " + item.error().reason());
-                }
-            }
-        }
-
-        @Override
-        public void afterBulk(long executionId, BulkRequest request, List<Void> contexts, Throwable failure) {
-            // The request could not be sent
-            logger.error("Bulk request " + executionId + " failed", failure);
-        }
-    }
 
 }
