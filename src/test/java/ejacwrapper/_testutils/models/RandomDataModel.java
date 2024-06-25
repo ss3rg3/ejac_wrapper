@@ -1,6 +1,5 @@
 package ejacwrapper._testutils.models;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -12,22 +11,11 @@ public class RandomDataModel {
     public static String INDEX_NAME = "random_data_index";
     private static final AtomicInteger counter = new AtomicInteger(0);
 
-    @Id
-    private String id;
-
     @Field(type = FieldType.Text, index = false)
     private String uuid = UUID.randomUUID().toString();
 
     @Field(type = FieldType.Integer, index = false)
     private Integer count = counter.incrementAndGet();
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getUuid() {
         return this.uuid;

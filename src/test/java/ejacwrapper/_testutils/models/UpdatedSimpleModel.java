@@ -16,7 +16,6 @@
 
 package ejacwrapper._testutils.models;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -25,9 +24,6 @@ import java.util.List;
 public class UpdatedSimpleModel {
 
     public static final String INDEX_NAME = "simple_model_index";
-
-    @Id
-    private String id;
 
     @Field(type = FieldType.Text, searchAnalyzer = "standard")
     private String stringField;
@@ -46,20 +42,11 @@ public class UpdatedSimpleModel {
     @Override
     public String toString() {
         return "TestModel{" +
-                "id='" + this.id + '\'' +
-                ", stringField='" + this.stringField + '\'' +
+                "stringField='" + this.stringField + '\'' +
                 ", integerField=" + this.integerField +
                 ", arrayField=" + this.arrayField +
                 ", transientField='" + this.transientField + '\'' +
                 '}';
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(final String id) {
-        this.id = id;
     }
 
     public String getStringField() {

@@ -12,9 +12,6 @@ public class ComplexModel {
 
     public static final String INDEX_NAME = "complex_model_index";
 
-    @Id
-    public String id;
-
     @Field(type = FieldType.Nested, store = false)
     public List<NestedModel> nestedField;
 
