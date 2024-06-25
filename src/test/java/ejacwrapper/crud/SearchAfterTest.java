@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch.core.CountRequest;
 import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import ejacwrapper._testutils.CustomBulkListener;
@@ -62,10 +61,10 @@ public class SearchAfterTest {
      */
     @Test
     void runSearchAfter() throws Exception {
-        CountResponse countResponse = esClient.count(CountRequest.of(c -> c
+        CountResponse countResponse = esClient.count(c -> c
                 .index(SEARCH_AFTER_INDEX)
                 .query(q -> q.matchAll(t -> t))
-        ));
+        );
         logger.info("Total documents in index: " + countResponse.count());
 
         // Make initial search to get the first page

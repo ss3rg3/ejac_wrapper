@@ -7,7 +7,6 @@ import co.elastic.clients.elasticsearch.indices.IndexState;
 import ejacwrapper._testutils.EjacClientFactory;
 import ejacwrapper._testutils.TestUtils;
 import ejacwrapper._testutils.models.SimpleModel;
-import ejacwrapper.core.EjacWrapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class IndexSettingsTest {
 
     private static final ElasticsearchClient esc = EjacClientFactory.create();
-    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
 
     @Test
     void createIndexWithCustomAnalyzer() throws Exception {
