@@ -3,6 +3,7 @@ package ejacwrapper._testutils;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
+import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,6 +11,10 @@ import java.io.IOException;
 import java.util.Map;
 
 public class TestUtils {
+
+    public static final IndexSettings indexSettingsDummy = IndexSettings.of(is -> is
+            .numberOfReplicas("5")
+            .numberOfShards("5"));
 
     public static String minifyJson(String prettyJson) {
         try {

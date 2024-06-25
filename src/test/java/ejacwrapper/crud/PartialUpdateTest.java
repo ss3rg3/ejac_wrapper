@@ -26,7 +26,7 @@ public class PartialUpdateTest {
     @Test
     void indexAndThenUpdate() throws Exception {
         TestUtils.tryToDeleteIndex(BookModel.INDEX_NAME, esc);
-        ejacWrapper.createIndexOrUpdateMapping(BookModel.INDEX_NAME, BookModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(BookModel.INDEX_NAME, TestUtils.indexSettingsDummy, BookModel.class);
 
         String id = "123";
         BookModel bookModel;

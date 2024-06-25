@@ -31,7 +31,7 @@ public class BulkIngesterTest {
     @Test
     void indexMultipleDocuments() throws Exception {
         TestUtils.tryToDeleteIndex(RandomDataModel.INDEX_NAME, esClient);
-        ejacWrapper.createIndexOrUpdateMapping(RandomDataModel.INDEX_NAME, RandomDataModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(RandomDataModel.INDEX_NAME, TestUtils.indexSettingsDummy, RandomDataModel.class);
 
         // Add documents to the bulk ingester
         IntStream.range(0, 21).forEach(i -> {

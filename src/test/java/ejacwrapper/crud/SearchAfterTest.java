@@ -41,7 +41,7 @@ public class SearchAfterTest {
     @BeforeAll
     static void indexDocuments() throws Exception {
         TestUtils.tryToDeleteIndex(SEARCH_AFTER_INDEX, esClient);
-        ejacWrapper.createIndexOrUpdateMapping(SEARCH_AFTER_INDEX, RandomDataModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(SEARCH_AFTER_INDEX, TestUtils.indexSettingsDummy, RandomDataModel.class);
         IntStream.range(0, 12_500).forEach(i -> {
             ingester.add(op -> op
                     .index(req -> req

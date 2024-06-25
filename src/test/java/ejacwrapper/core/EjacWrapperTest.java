@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EjacWrapperTest {
 
     private static final ElasticsearchClient esc = EjacClientFactory.create();
-    private static final EjacWrapper ejacIndices = new EjacWrapper(esc);
+    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
 
     @Test
     void createIndexOrUpdateMapping() throws Exception {
         TestUtils.tryToDeleteIndex(SimpleModel.INDEX_NAME, esc);
 
-        ejacIndices.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, SimpleModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, TestUtils.indexSettingsDummy, SimpleModel.class);
         assertTrue(TestUtils.indexExists(SimpleModel.INDEX_NAME, esc));
 
         // We create the index the mappings of `SimpleModel`
@@ -32,7 +32,7 @@ class EjacWrapperTest {
                 properties.get("stringField").toString());
 
         // Then we update the mappings of SimpleModel to `UpdatedSimpleModel` (add search_analyzer to stringField and add newField)
-        ejacIndices.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, UpdatedSimpleModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, TestUtils.indexSettingsDummy, UpdatedSimpleModel.class);
         properties = TestUtils.getMappingProperties(SimpleModel.INDEX_NAME, esc);
         assertEquals(5, properties.size());
         assertEquals("Property: {\"type\":\"text\",\"analyzer\":\"default\",\"search_analyzer\":\"standard\"}",
@@ -41,7 +41,7 @@ class EjacWrapperTest {
                 properties.get("newField").toString());
 
         // Then we run the method again with `UpdatedSimpleModel` to make sure it's idempotent
-        ejacIndices.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, UpdatedSimpleModel.class);
+        ejacWrapper.createIndexOrUpdateMapping(SimpleModel.INDEX_NAME, TestUtils.indexSettingsDummy, UpdatedSimpleModel.class);
         properties = TestUtils.getMappingProperties(SimpleModel.INDEX_NAME, esc);
         assertEquals(5, properties.size());
         assertEquals("Property: {\"type\":\"text\",\"analyzer\":\"default\",\"search_analyzer\":\"standard\"}",
