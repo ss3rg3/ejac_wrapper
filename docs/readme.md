@@ -1,14 +1,16 @@
 {:toc}
 
-# :pencil2: Understanding ejac_wrapper
+# Understanding ejac_wrapper
 
-// todo
+## :pencil2: To-Do's
 
 - [ ] Comes with the Java Client bundled, 
 
   - [ ] depends on [Spring Data Elasticsearch](https://spring.io/projects/spring-data-elasticsearch) for mapping
 
   - [ ] [compatibility matrix](https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/versions.html)
+
+  - [ ] Rest is in EjacWrapper
 
 - [ ] How to ignore certs (move class to main package)
 
@@ -23,6 +25,10 @@
 - [ ] How to scroll
 
 - [ ] How to count docs in an index. With search & size=0 it stops at 10k. Use aggregation?
+
+- [ ] Add Insomnia collection for requests
+
+- [ ] How to work with IDs? Setting `@Id` doesn't seem to be enough
 
   
 
