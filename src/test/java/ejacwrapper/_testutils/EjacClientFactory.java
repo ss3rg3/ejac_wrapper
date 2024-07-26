@@ -1,48 +1,57 @@
 package ejacwrapper._testutils;
 
+import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import ejacwrapper.utils.UnsafeX509ExtendedTrustManager;
-import org.apache.http.Header;
+import ejacwrapper.core.EjacWrapper;
+import ejacwrapper.utils.ElasticsearchClientFactory;
 import org.apache.http.HttpHost;
-import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.io.IOException;
+import java.util.List;
 
-public abstract class EjacClientFactory {
+public class EjacClientFactory implements ElasticsearchClientFactory {
 
-    private static String asBase64(String username, String password) {
-        String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
-        return "Basic " + new String(encodedAuth);
-    }
+    private final ElasticsearchClient esc;
+    private final ElasticsearchAsyncClient escAsync;
+    private final EjacWrapper ejacWrapper;
 
-    public static ElasticsearchClient create() {
-        SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, new TrustManager[]{UnsafeX509ExtendedTrustManager.INSTANCE}, null);
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        }
-
+    public EjacClientFactory() {
+        HttpHost[] httpHosts = ElasticsearchClientFactory.httpHostsListToArray(List.of("https://localhost:9200"));
         RestClient restClient = RestClient
-                .builder(HttpHost.create("https://localhost:9200"))
-                .setDefaultHeaders(new Header[]{
-                        new BasicHeader("Authorization", asBase64("elastic", "elastic"))
-                })
-                .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
-                        .setSSLContext(sslContext)
-                        .setSSLHostnameVerifier((hostNameVerifier, sslSession) -> true))
+                .builder(httpHosts)
+                .setDefaultHeaders(ElasticsearchClientFactory.authorizationHeader("elastic", "elastic"))
+                .setHttpClientConfigCallback(ElasticsearchClientFactory::unsafeClientBuilder)
                 .build();
         ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
-        return new ElasticsearchClient(transport);
+
+        this.esc = new ElasticsearchClient(transport);
+        this.escAsync = new ElasticsearchAsyncClient(transport);
+        this.ejacWrapper = new EjacWrapper(this.esc);
     }
+
+    @Override
+    public ElasticsearchClient get() {
+        return this.esc;
+    }
+
+    @Override
+    public ElasticsearchAsyncClient getAsync() {
+        return this.escAsync;
+    }
+
+    @Override
+    public EjacWrapper getEjacWrapper() {
+        return this.ejacWrapper;
+    }
+
+    @Override
+    public void createOrUpdateIndex(String indexName, IndexSettings indexSettings, Class<?> model) throws IOException {
+
+    }
+
 }

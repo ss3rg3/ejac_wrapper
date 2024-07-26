@@ -25,12 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SearchAfterTest {
 
-    private static final ElasticsearchClient esClient = EjacClientFactory.create();
-    private static final EjacWrapper ejacWrapper = new EjacWrapper(esClient);
+    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
+    private static final ElasticsearchClient esc = ejacClientFactory.get();
+    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
     private static final AtomicInteger documentCounter = new AtomicInteger(0);
     private static final AtomicInteger requestCounter = new AtomicInteger(0);
     private static final BulkIngester<Void> ingester = BulkIngester.of(b -> b
-            .client(esClient)
+            .client(esc)
             .maxOperations(1000)
             .listener(new CustomBulkListener(documentCounter, requestCounter))
     );
@@ -39,7 +40,7 @@ public class SearchAfterTest {
 
     @BeforeAll
     static void indexDocuments() throws Exception {
-        TestUtils.tryToDeleteIndex(SEARCH_AFTER_INDEX, esClient);
+        TestUtils.tryToDeleteIndex(SEARCH_AFTER_INDEX, esc);
         ejacWrapper.createIndexOrUpdateMapping(SEARCH_AFTER_INDEX, TestUtils.indexSettingsDummy, RandomDataModel.class);
         IntStream.range(0, 12_500).forEach(i -> {
             ingester.add(op -> op
@@ -61,7 +62,7 @@ public class SearchAfterTest {
      */
     @Test
     void runSearchAfter() throws Exception {
-        CountResponse countResponse = esClient.count(c -> c
+        CountResponse countResponse = esc.count(c -> c
                 .index(SEARCH_AFTER_INDEX)
                 .query(q -> q.matchAll(t -> t))
         );
@@ -69,7 +70,7 @@ public class SearchAfterTest {
 
         // Make initial search to get the first page
         AtomicInteger documentCounter = new AtomicInteger(0);
-        SearchResponse<RandomDataModel> response = esClient.search(search -> search
+        SearchResponse<RandomDataModel> response = esc.search(search -> search
                 .index(SEARCH_AFTER_INDEX)
                 .size(750)
                 .query(query -> query.matchAll(t -> t))
@@ -92,7 +93,7 @@ public class SearchAfterTest {
                 logger.info("`lastSort` is null");
             }
 
-            response = esClient.search(search -> search
+            response = esc.search(search -> search
                     .index(SEARCH_AFTER_INDEX)
                     .size(750)
                     .query(query -> query.matchAll(t -> t))

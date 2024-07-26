@@ -346,6 +346,18 @@
 
 
 
+## Testing
+
+- Start the test cluster
+
+  ```
+  make up
+  ```
+
+- Run the test via IDE or Maven
+
+
+
 ## Starting the test cluster
 
 - There's a `docker-compose.yml` in `assets/`

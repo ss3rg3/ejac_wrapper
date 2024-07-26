@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PartialUpdateTest {
 
-    private static final ElasticsearchClient esc = EjacClientFactory.create();
+    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
+    private static final ElasticsearchClient esc = ejacClientFactory.get();
     private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
 
     @Test

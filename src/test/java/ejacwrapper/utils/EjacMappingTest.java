@@ -2,7 +2,8 @@ package ejacwrapper.utils;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
-import ejacwrapper._testutils.*;
+import ejacwrapper._testutils.EjacClientFactory;
+import ejacwrapper._testutils.TestUtils;
 import ejacwrapper._testutils.models.ComplexModel;
 import ejacwrapper._testutils.models.NoModel;
 import ejacwrapper._testutils.models.SimpleModel;
@@ -17,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EjacMappingTest {
 
-    private static final ElasticsearchClient esc = EjacClientFactory.create();
+    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
+    private static final ElasticsearchClient esc = ejacClientFactory.get();
 
     @Test
     void noModel() {

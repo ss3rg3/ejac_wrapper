@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class IndexSettingsTest {
 
-    private static final ElasticsearchClient esc = EjacClientFactory.create();
+    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
+    private static final ElasticsearchClient esc = ejacClientFactory.get();
 
     @Test
     void createIndexWithCustomAnalyzer() throws Exception {

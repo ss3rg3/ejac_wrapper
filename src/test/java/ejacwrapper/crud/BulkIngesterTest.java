@@ -18,19 +18,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BulkIngesterTest {
 
-    private static final ElasticsearchClient esClient = EjacClientFactory.create();
-    private static final EjacWrapper ejacWrapper = new EjacWrapper(esClient);
+    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
+    private static final ElasticsearchClient esc = ejacClientFactory.get();
+    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
     private static final AtomicInteger documentCounter = new AtomicInteger(0);
     private static final AtomicInteger requestCounter = new AtomicInteger(0);
     private static final BulkIngester<Void> ingester = BulkIngester.of(b -> b
-            .client(esClient)
+            .client(esc)
             .maxOperations(10)
             .listener(new CustomBulkListener(documentCounter, requestCounter))
     );
 
     @Test
     void indexMultipleDocuments() throws Exception {
-        TestUtils.tryToDeleteIndex(RandomDataModel.INDEX_NAME, esClient);
+        TestUtils.tryToDeleteIndex(RandomDataModel.INDEX_NAME, esc);
         ejacWrapper.createIndexOrUpdateMapping(RandomDataModel.INDEX_NAME, TestUtils.indexSettingsDummy, RandomDataModel.class);
 
         // Add documents to the bulk ingester
@@ -44,7 +45,7 @@ public class BulkIngesterTest {
         ingester.flush(); // Flush document #21
         Thread.sleep(1000); // Because it's async
 
-        SearchResponse<RandomDataModel> response = esClient.search(s -> s
+        SearchResponse<RandomDataModel> response = esc.search(s -> s
                         .index(RandomDataModel.INDEX_NAME)
                         .size(0)
                         .query(q -> q.matchAll(t -> t)),
