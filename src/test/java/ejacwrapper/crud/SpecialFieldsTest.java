@@ -2,7 +2,7 @@ package ejacwrapper.crud;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
-import ejacwrapper._testutils.EjacClientFactory;
+import ejacwrapper._testutils.DummyEjacWrapper;
 import ejacwrapper._testutils.TestUtils;
 import ejacwrapper._testutils.models.SpecialFieldsModel;
 import ejacwrapper.core.EjacWrapper;
@@ -15,9 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SpecialFieldsTest {
 
-    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
-    private static final ElasticsearchClient esc = ejacClientFactory.get();
-    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
+    private static final EjacWrapper ejacWrapper = new DummyEjacWrapper();
+    private static final ElasticsearchClient esc = ejacWrapper.get();
 
     @Test
     void indexDocumentAndRetrieve() throws Exception {

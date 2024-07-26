@@ -1,19 +1,38 @@
 package ejacwrapper.core;
 
+import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import ejacwrapper.utils.EjacUtils;
+import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 
-public class EjacWrapper {
+/**
+ * If you're using a dependency injection framework which complain when you do anything outside variable
+ * initialization, you can pass null and implement `get()` as a synchronized singleton creator and getter.
+ */
+public abstract class EjacWrapper {
 
-    private final ElasticsearchClient esc;
+    protected volatile ElasticsearchClient esc;
+    protected volatile ElasticsearchAsyncClient escAsync;
 
-    public EjacWrapper(ElasticsearchClient esc) {
+    /**
+     * If you're using a dependency injection framework which complain when you do anything outside variable
+     * initialization, you can pass null and implement `get()` as a synchronized singleton creator and getter.
+     */
+    public EjacWrapper(@Nullable ElasticsearchClient esc) {
+        if (esc == null) {
+            return;
+        }
         this.esc = esc;
+        this.escAsync = new ElasticsearchAsyncClient(esc._transport());
     }
+
+    public abstract ElasticsearchClient get();
+
+    public abstract ElasticsearchAsyncClient getAsync();
 
     /**
      * Create an index with the given settings and mapping. If the index already exists, update the mapping.<br>

@@ -7,7 +7,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import ejacwrapper._testutils.CustomBulkListener;
-import ejacwrapper._testutils.EjacClientFactory;
+import ejacwrapper._testutils.DummyEjacWrapper;
 import ejacwrapper._testutils.TestUtils;
 import ejacwrapper._testutils.models.RandomDataModel;
 import ejacwrapper.core.EjacWrapper;
@@ -25,9 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SearchAfterTest {
 
-    private static final EjacClientFactory ejacClientFactory = new EjacClientFactory();
-    private static final ElasticsearchClient esc = ejacClientFactory.get();
-    private static final EjacWrapper ejacWrapper = new EjacWrapper(esc);
+    private static final EjacWrapper ejacWrapper = new DummyEjacWrapper();
+    private static final ElasticsearchClient esc = ejacWrapper.get();
     private static final AtomicInteger documentCounter = new AtomicInteger(0);
     private static final AtomicInteger requestCounter = new AtomicInteger(0);
     private static final BulkIngester<Void> ingester = BulkIngester.of(b -> b
