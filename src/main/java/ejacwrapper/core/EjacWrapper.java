@@ -2,6 +2,7 @@ package ejacwrapper.core;
 
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import ejacwrapper.utils.EjacUtils;
@@ -33,6 +34,8 @@ public abstract class EjacWrapper {
     public abstract ElasticsearchClient get();
 
     public abstract ElasticsearchAsyncClient getAsync();
+
+    public abstract BulkIngester<Void> getBulkIngester();
 
     /**
      * Create an index with the given settings and mapping. If the index already exists, update the mapping.<br>

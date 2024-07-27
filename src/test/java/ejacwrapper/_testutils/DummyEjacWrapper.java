@@ -2,6 +2,7 @@ package ejacwrapper._testutils;
 
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -41,6 +42,11 @@ public class DummyEjacWrapper extends EjacWrapper {
     @Override
     public synchronized ElasticsearchAsyncClient getAsync() {
         return this.escAsync;
+    }
+
+    @Override
+    public BulkIngester<Void> getBulkIngester() {
+        throw new IllegalStateException("Not used in tests");
     }
 
 }
