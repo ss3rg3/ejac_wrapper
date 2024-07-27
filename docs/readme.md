@@ -40,13 +40,13 @@
 
   - **`EjacWrapper`**
 
-    Wraps an provided `ElasticsearchClient` and extends it with some functions, e.g. `createIndexOrUpdateMapping()` to automatically start with created indices and up-to-date mappings based on the Spring Data classes.
+    Abstract class which allows you to provide an `ElasticsearchClient`, `ElasticsearchAsyncClient` and `BulkIngester` with your implementation. It also provides utility methods like `createIndexOrUpdateMapping()` to automatically start with created indices and up-to-date mappings based on the Spring Data classes. See `DummyEjacWrapper` for an implementation example.
 
   - **`EjacUtils`** 
 
-    Some utilities like `mappingAsInputStream()` to create mappings from classes with Spring Data annotations or `getLastSortValue()` to simplify `searchAfter` scolling.
+    Some utilities like `mappingAsInputStream()` to create mappings from classes with Spring Data annotations or `getLastSortValue()` to simplify `searchAfter` scolling. Also some utilities to create clients like `unsafeClientBuilder` to allow self-signed certs.
 
-    
+- Usage can be best deducted from the tests.
 
 
 
