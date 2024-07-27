@@ -15,10 +15,17 @@ import java.util.List;
 
 public class DummyEjacWrapper extends EjacWrapper {
 
+    /**
+     * Instead of initializing everything in the constructor, we do that in `get()` because some dependency frameworks
+     * (like Quarkus) complain when you do anything outside variable initialization in the constructor.
+     */
     public DummyEjacWrapper() {
-        super(null);
+        super(null, null);
     }
 
+    /**
+     * Initialization should happen in the constructor, but we do it as example.
+     */
     @Override
     public synchronized ElasticsearchClient get() {
         if (this.esc != null) {

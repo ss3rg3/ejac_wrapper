@@ -18,17 +18,19 @@ public abstract class EjacWrapper {
 
     protected volatile ElasticsearchClient esc;
     protected volatile ElasticsearchAsyncClient escAsync;
+    protected volatile BulkIngester<Void> bulkIngester;
 
     /**
      * If you're using a dependency injection framework which complain when you do anything outside variable
      * initialization, you can pass null and implement `get()` as a synchronized singleton creator and getter.
      */
-    public EjacWrapper(@Nullable ElasticsearchClient esc) {
+    public EjacWrapper(@Nullable ElasticsearchClient esc, @Nullable BulkIngester<Void> bulkIngester) {
         if (esc == null) {
             return;
         }
         this.esc = esc;
         this.escAsync = new ElasticsearchAsyncClient(esc._transport());
+        this.bulkIngester = bulkIngester;
     }
 
     public abstract ElasticsearchClient get();
