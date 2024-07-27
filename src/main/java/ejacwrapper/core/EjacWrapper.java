@@ -6,7 +6,6 @@ import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import ejacwrapper.utils.EjacUtils;
-import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -16,22 +15,10 @@ import java.io.IOException;
  */
 public abstract class EjacWrapper {
 
-    protected volatile ElasticsearchClient esc;
-    protected volatile ElasticsearchAsyncClient escAsync;
+    protected volatile ElasticsearchClient elasticsearchClient;
+    protected volatile ElasticsearchAsyncClient elasticsearchAsyncClient;
     protected volatile BulkIngester<Void> bulkIngester;
 
-    /**
-     * If you're using a dependency injection framework which complain when you do anything outside variable
-     * initialization, you can pass null and implement `get()` as a synchronized singleton creator and getter.
-     */
-    public EjacWrapper(@Nullable ElasticsearchClient esc, @Nullable BulkIngester<Void> bulkIngester) {
-        if (esc == null) {
-            return;
-        }
-        this.esc = esc;
-        this.escAsync = new ElasticsearchAsyncClient(esc._transport());
-        this.bulkIngester = bulkIngester;
-    }
 
     public abstract ElasticsearchClient get();
 
@@ -46,15 +33,15 @@ public abstract class EjacWrapper {
      * So you have to do it manually, i.e. close the indices, apply the settings changes, and reopen the indices.
      */
     public void createIndexOrUpdateMapping(String indexName, IndexSettings indexSettings, Class<?> modelClass) throws IOException {
-        BooleanResponse exists = this.esc.indices().exists(req -> req.index(indexName));
+        BooleanResponse exists = this.elasticsearchClient.indices().exists(req -> req.index(indexName));
         if (!exists.value()) {
-            this.esc.indices().create(req -> req
+            this.elasticsearchClient.indices().create(req -> req
                     .index(indexName)
                     .settings(indexSettings)
                     .withJson(EjacUtils.mappingAsInputStream(modelClass, true)));
             return;
         }
-        this.esc.indices().putMapping(req -> req
+        this.elasticsearchClient.indices().putMapping(req -> req
                 .index(indexName)
                 .withJson(EjacUtils.mappingAsInputStream(modelClass, false)));
     }

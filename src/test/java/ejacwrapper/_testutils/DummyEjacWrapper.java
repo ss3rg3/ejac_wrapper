@@ -20,7 +20,7 @@ public class DummyEjacWrapper extends EjacWrapper {
      * (like Quarkus) complain when you do anything outside variable initialization in the constructor.
      */
     public DummyEjacWrapper() {
-        super(null, null);
+
     }
 
     /**
@@ -28,8 +28,8 @@ public class DummyEjacWrapper extends EjacWrapper {
      */
     @Override
     public synchronized ElasticsearchClient get() {
-        if (this.esc != null) {
-            return this.esc;
+        if (this.elasticsearchClient != null) {
+            return this.elasticsearchClient;
         }
 
         HttpHost[] httpHosts = EjacUtils.httpHostsListToArray(List.of("https://localhost:9200"));
@@ -40,20 +40,25 @@ public class DummyEjacWrapper extends EjacWrapper {
                 .build();
         ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
 
-        this.esc = new ElasticsearchClient(transport);
-        this.escAsync = new ElasticsearchAsyncClient(transport);
+        this.elasticsearchClient = new ElasticsearchClient(transport);
+        this.elasticsearchAsyncClient = new ElasticsearchAsyncClient(transport);
+        this.bulkIngester = BulkIngester.of(b -> b
+                .client(this.elasticsearchClient)
+                .maxOperations(1000)
+        );
 
-        return this.esc;
+        return this.elasticsearchClient;
     }
 
     @Override
     public synchronized ElasticsearchAsyncClient getAsync() {
-        return this.escAsync;
+        return this.elasticsearchAsyncClient;
     }
 
     @Override
     public BulkIngester<Void> getBulkIngester() {
-        throw new IllegalStateException("Not used in tests");
+        throw new IllegalStateException("Not used in tests, we create another one");
     }
+
 
 }
