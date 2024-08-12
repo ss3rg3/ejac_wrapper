@@ -107,7 +107,16 @@
   );
   ```
 
+- If your model is already an object which contains only the fields you want to update, then you can simply map it to a `Map<String, Object>`:
 
+  ```java
+  // We map the object onto a Map for partial update (Include.NON_NULL only includes fields with non-null values)
+  ObjectMapper objectMapper = new ObjectMapper()
+              .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
+  ```
+
+  
 
 
 
@@ -202,6 +211,26 @@
               ));
   });
   ingester.flush(); // Manual flush for document #21
+  ```
+
+- Update queries are a bit weird. You have to define an `action()` which can include a script for advanced use-cases.
+
+  ```java
+  // We map the object onto a Map for partial update (Include.NON_NULL only includes fields with non-null values)
+  ObjectMapper objectMapper = new ObjectMapper()
+              .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
+  
+  this.bulkIngester.add(op -> op
+          .update(idx -> idx
+                  .index(DomainCandidate.indexName)
+                  .id(candidate.getDomain())  // ID of the document
+                  .action(doc -> doc
+                          .doc(partialUpdate) 
+                          .docAsUpsert(true)  // Create document if it doesn't exist
+                  )
+          )
+  );
   ```
 
   
