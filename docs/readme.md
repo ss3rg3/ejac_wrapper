@@ -116,6 +116,25 @@
   Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
   ```
 
+  Note that if you have `Date` or other special fields then you need a serializer because Elasticsearch expects strings in ISO 8601 format (`yyyy-MM-dd'T'HH:mm:ss.SSSZ`). 
+  
+  ```java
+  public static final ObjectMapper JSON = new ObjectMapper()
+          .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+          .registerModule(new SimpleModule().addSerializer(Date.class, new IsoDateSerializer()));
+  
+  public class IsoDateSerializer extends JsonSerializer<Date> {
+  
+      private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  
+      @Override
+      public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+          String formattedDate = formatter.format(value);
+          gen.writeString(formattedDate);
+      }
+  }
+  ```
+  
   
 
 
