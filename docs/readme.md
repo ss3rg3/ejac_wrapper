@@ -107,15 +107,16 @@
   );
   ```
 
-- If your model is already an object which contains only the fields you want to update, then you can simply map it to a `Map<String, Object>`:
+- If your model is already the document model which you use in the index and you want to only update fields which are not null, then you can simply map it to a `Map<String, Object>`:
 
   ```java
   // We map the object onto a Map for partial update (Include.NON_NULL only includes fields with non-null values)
+  // I.e. all fields of object 'candidate' which are not null will be added to the map. The rest will be left out.
   ObjectMapper objectMapper = new ObjectMapper()
               .setSerializationInclusion(JsonInclude.Include.NON_NULL);
   Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
   ```
-
+  
   Note that if you have `Date` or other special fields then you need a serializer because Elasticsearch expects strings in ISO 8601 format (`yyyy-MM-dd'T'HH:mm:ss.SSSZ`). 
   
   ```java
