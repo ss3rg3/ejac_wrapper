@@ -1,6 +1,7 @@
 package ejacwrapper.utils;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.mapping.DynamicMapping;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
 import ejacwrapper._testutils.DummyEjacWrapper;
 import ejacwrapper._testutils.TestUtils;
@@ -23,7 +24,7 @@ class EjacMappingTest {
 
     @Test
     void noModel() {
-        String mapping = EjacUtils.mappingAsString(NoModel.class, true);
+        String mapping = EjacUtils.asMappingsNode(NoModel.class, DynamicMapping.False);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -33,7 +34,8 @@ class EjacMappingTest {
                                 "index": false,
                                 "doc_values": false
                             }
-                        }
+                        },
+                        "dynamic" : "false"
                     }
                 }
                 """), mapping);
@@ -41,7 +43,7 @@ class EjacMappingTest {
 
     @Test
     void simpleModel() {
-        String mapping = EjacUtils.mappingAsString(SimpleModel.class, true);
+        String mapping = EjacUtils.asMappingsNode(SimpleModel.class, DynamicMapping.Strict);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -60,15 +62,42 @@ class EjacMappingTest {
                             "arrayField": {
                                 "type": "text"
                             }
-                        }
+                        },
+                        "dynamic" : "strict"
                     }
                 }
                 """), mapping);
     }
 
     @Test
+    void asValueForMappingsNode() {
+        String mapping = EjacUtils.asValueForMappingsNode(SimpleModel.class, DynamicMapping.True);
+        assertEquals(minifyJson("""
+                {
+                    "properties": {
+                        "_class": {
+                            "type": "keyword",
+                            "index": false,
+                            "doc_values": false
+                        },
+                        "stringField": {
+                            "type": "text"
+                        },
+                        "integerField": {
+                            "type": "integer"
+                        },
+                        "arrayField": {
+                            "type": "text"
+                        }
+                    },
+                    "dynamic" : "true"
+                }
+                """), mapping);
+    }
+
+    @Test
     void complexModel() {
-        String mapping = EjacUtils.mappingAsString(ComplexModel.class, true);
+        String mapping = EjacUtils.asMappingsNode(ComplexModel.class, DynamicMapping.True);
         assertEquals(minifyJson("""
                 {
                     "mappings": {
@@ -134,7 +163,8 @@ class EjacMappingTest {
                                 "objectField.age",
                                 "mapField"
                             ]
-                        }
+                        },
+                        "dynamic" : "true"
                     }
                 }
                 """), mapping);
@@ -142,8 +172,8 @@ class EjacMappingTest {
 
     @Test
     void asInputStream() throws Exception {
-        try (InputStream stream = EjacUtils.mappingAsInputStream(SimpleModel.class, true)) {
-            String asString = EjacUtils.mappingAsString(SimpleModel.class, true);
+        try (InputStream stream = EjacUtils.asInputStream(EjacUtils.asMappingsNode(SimpleModel.class, DynamicMapping.Strict))) {
+            String asString = (EjacUtils.asMappingsNode(SimpleModel.class, DynamicMapping.Strict));
             String fromStream = new String(stream.readAllBytes());
             assertEquals(asString, fromStream);
         }
@@ -176,7 +206,7 @@ class EjacMappingTest {
             TestUtils.tryToDeleteIndex(indexName, esc);
             esc.indices().create(req -> req
                     .index(indexName)
-                    .withJson(EjacUtils.mappingAsInputStream(clazz, true))
+                    .withJson(EjacUtils.asInputStream(EjacUtils.asMappingsNode(clazz, DynamicMapping.Strict)))
             );
             return TestUtils.getMappingProperties(indexName, esc);
         } catch (IOException e) {

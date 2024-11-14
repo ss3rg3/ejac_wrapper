@@ -3,6 +3,7 @@ package ejacwrapper._testutils;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.mapping.Property;
+import co.elastic.clients.elasticsearch.indices.GetMappingResponse;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,9 +48,11 @@ public class TestUtils {
 
     public static Map<String, Property> getMappingProperties(String indexName, ElasticsearchClient esc) {
         try {
-            return esc.indices().getMapping(req ->
-                            req.index(indexName)).result()
-                    .values().iterator().next().mappings().properties();
+            GetMappingResponse response = esc.indices().getMapping(req ->
+                    req.index(indexName));
+            return response.result().values()
+                    .iterator().next()
+                    .mappings().properties();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

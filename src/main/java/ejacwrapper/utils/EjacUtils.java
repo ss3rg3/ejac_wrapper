@@ -1,7 +1,11 @@
 package ejacwrapper.utils;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.mapping.DynamicMapping;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.Nullable;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -20,6 +24,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for commons issues, e.g. Elasticsearch mapping via Spring Data Elasticsearch.
@@ -34,22 +39,44 @@ public class EjacUtils {
     private static final SimpleElasticsearchMappingContext mappingContext = new SimpleElasticsearchMappingContext();
     private static final MappingElasticsearchConverter converter = new MappingElasticsearchConverter(mappingContext);
     private static final MappingBuilder mappingBuilder = new MappingBuilder(converter);
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
+     * This is the value you get from the `_mappings/` endpoint, i.e. `"{mappings": {"properties": {...}}}`.
+     * It's needed when creating a new index.
      */
-    public static String mappingAsString(Class<?> clazz, boolean wrapInMappings) {
-        if (wrapInMappings) {
-            return "{\"mappings\":" + mappingBuilder.buildPropertyMapping(clazz) + "}";
+    public static String asMappingsNode(Class<?> clazz, DynamicMapping dynamicMapping) {
+        try {
+            return mapper.writeValueAsString(Map.of("mappings", convertToObjectNode(clazz, dynamicMapping)));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        return mappingBuilder.buildPropertyMapping(clazz);
     }
 
     /**
-     * `wrapInMappings=true` is needed when creating a new index. When updating an existing index, it must be `false`.
+     * This is the same as `asMappingsNode`, but without the `mappings` key wrapping it.
+     * It's needed when updating an existing index.
      */
-    public static InputStream mappingAsInputStream(Class<?> clazz, boolean wrapInMappings) {
-        return new ByteArrayInputStream(mappingAsString(clazz, wrapInMappings).getBytes(Charset.defaultCharset()));
+    public static String asValueForMappingsNode(Class<?> clazz, DynamicMapping dynamicMapping) {
+        try {
+            return mapper.writeValueAsString(convertToObjectNode(clazz, dynamicMapping));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ObjectNode convertToObjectNode(Class<?> clazz, DynamicMapping dynamicMapping) {
+        try {
+            ObjectNode mappingsValue = (ObjectNode) mapper.readTree(mappingBuilder.buildPropertyMapping(clazz));
+            mappingsValue.put("dynamic", dynamicMapping.jsonValue());
+            return mappingsValue;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static InputStream asInputStream(String value) {
+        return new ByteArrayInputStream(value.getBytes(Charset.defaultCharset()));
     }
 
 
@@ -88,7 +115,6 @@ public class EjacUtils {
                 .toList()
                 .toArray(HttpHost[]::new);
     }
-
 
 
     // ------------------------------------------------------------------------------------------ //

@@ -3,6 +3,7 @@ package ejacwrapper.core;
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._helpers.bulk.BulkIngester;
+import co.elastic.clients.elasticsearch._types.mapping.DynamicMapping;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import ejacwrapper.utils.EjacUtils;
@@ -32,18 +33,30 @@ public abstract class EjacWrapper {
      * When index exists, only the mapping is updated. The settings are NOT updated (this requires to close the indices).
      * So you have to do it manually, i.e. close the indices, apply the settings changes, and reopen the indices.
      */
-    public void createIndexOrUpdateMapping(String indexName, IndexSettings indexSettings, Class<?> modelClass) throws IOException {
+    public void createIndexOrUpdateMapping(String indexName,
+                                           IndexSettings indexSettings,
+                                           Class<?> modelClass,
+                                           DynamicMapping dynamicMapping) throws IOException {
         BooleanResponse exists = this.elasticsearchClient.indices().exists(req -> req.index(indexName));
         if (!exists.value()) {
             this.elasticsearchClient.indices().create(req -> req
                     .index(indexName)
                     .settings(indexSettings)
-                    .withJson(EjacUtils.mappingAsInputStream(modelClass, true)));
+                    .withJson(EjacUtils.asInputStream(EjacUtils.asMappingsNode(modelClass, dynamicMapping))));
             return;
         }
         this.elasticsearchClient.indices().putMapping(req -> req
                 .index(indexName)
-                .withJson(EjacUtils.mappingAsInputStream(modelClass, false)));
+                .withJson(EjacUtils.asInputStream(EjacUtils.asValueForMappingsNode(modelClass, dynamicMapping))));
+    }
+
+    /**
+     * Same as {@link #createIndexOrUpdateMapping(String, IndexSettings, Class, DynamicMapping)}, but with {@link DynamicMapping#Strict}.
+     */
+    public void createIndexOrUpdateMapping(String indexName,
+                                           IndexSettings indexSettings,
+                                           Class<?> modelClass) throws IOException {
+        this.createIndexOrUpdateMapping(indexName, indexSettings, modelClass, DynamicMapping.Strict);
     }
 
 }
