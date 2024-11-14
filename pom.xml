@@ -6,7 +6,7 @@
 
     <groupId>io.github.ss3rg3</groupId>
     <artifactId>ejac_wrapper</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
