@@ -3,9 +3,12 @@ package ejacwrapper.utils;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.mapping.DynamicMapping;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.Nullable;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -22,24 +25,35 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Utility class for commons issues, e.g. Elasticsearch mapping via Spring Data Elasticsearch.
  */
 public class EjacUtils {
 
-
-    // ------------------------------------------------------------------------------------------ //
-    // MAPPING
-    // ------------------------------------------------------------------------------------------ //
-
     private static final SimpleElasticsearchMappingContext mappingContext = new SimpleElasticsearchMappingContext();
     private static final MappingElasticsearchConverter converter = new MappingElasticsearchConverter(mappingContext);
     private static final MappingBuilder mappingBuilder = new MappingBuilder(converter);
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final DateFormat UTC_FORMAT;
+
+    static {
+        UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK);
+        UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .setDateFormat(UTC_FORMAT)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+    // ------------------------------------------------------------------------------------------ //
+    // MAPPING
+    // ------------------------------------------------------------------------------------------ //
 
     /**
      * This is the value you get from the `_mappings/` endpoint, i.e. `"{mappings": {"properties": {...}}}`.
@@ -134,6 +148,23 @@ public class EjacUtils {
 
     public static <T> boolean hasHits(SearchResponse<T> response) {
         return !response.hits().hits().isEmpty();
+    }
+
+
+    // ------------------------------------------------------------------------------------------ //
+    // INDEXING
+    // ------------------------------------------------------------------------------------------ //
+
+    /**
+     * When you use `Map.of()` to create a document for indexing, then it will contain all fields including whose
+     * values are null. This will bloat your `_source` field and create confusion (the fields won't exist in the index
+     * but are shown in `_source` with value `null`, e.g. "does an `exists` query now work or not??").<br>
+     * - This uses Jackson to map the given to a clean Map via `JsonInclude.Include.NON_NULL`<br>
+     * - Date fields are turned into objects into string with format `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'` (ISO 8601)
+     */
+    public static Map<String, Object> asMapWithoutNullValues(Object obj) {
+        return objectMapper.convertValue(obj, new TypeReference<>() {
+        });
     }
 
 
