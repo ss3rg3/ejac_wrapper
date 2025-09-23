@@ -405,6 +405,14 @@
 
 - Run the test via IDE or Maven
 
+- Test it:
+
+  ```bash
+  curl --insecure -u elastic:elastic https://localhost:9200
+  ```
+
+  
+
 
 
 ## Starting the test cluster
@@ -421,10 +429,21 @@
 
 
 
+
+
 ## Manual queries to the REST API
 
 - There's an insomnia export in `assets/` with some minimal requests
+
 - E.g. for checking index settings or mappings
+
+- Via curl:
+
+  ```bash
+  curl --insecure -u elastic:elastic https://localhost:9200
+  ```
+
+  
 
 
 
