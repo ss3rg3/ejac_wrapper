@@ -18,13 +18,14 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-elasticsearch</artifactId>
-            <version>5.3.1</version>
+            <version>5.3.1</version> <!-- TODO Your `elasticsearch-java` version must match what they use in their pom.xlm. Check the release branch: https://github.com/spring-projects/spring-data-elasticsearch/tree/main -->
         </dependency>
         <!-- Source: https://mvnrepository.com/artifact/co.elastic.clients/elasticsearch-java -->
         <dependency>
+            <!-- TODO delete this thing. It's imported by SpringData. Just add a note about the version next to `spring-data-elasticsearch` -->
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
-            <version>8.19.10</version>
+            <version>8.19.10</version> <!-- TODO Version mismatch. SpringData 5.3.x uses 8.13.4, see https://github.com/spring-projects/spring-data-elasticsearch/blob/5.3.x/pom.xml -->
             <scope>compile</scope>
         </dependency>
         <dependency>
