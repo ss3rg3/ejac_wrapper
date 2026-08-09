@@ -6,7 +6,7 @@
 
     <groupId>io.github.ss3rg3</groupId>
     <artifactId>ejac_wrapper</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-elasticsearch</artifactId>
-            <version>5.5.13</version> <!-- Includes `elasticsearch-java` 8.18.8 (the Elasticsearch Java API Client)  -->
+            <version>5.3.1</version> <!-- Includes `elasticsearch-java` 8.13.4 (the Elasticsearch Java API Client)  -->
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
