@@ -80,9 +80,9 @@
 
 ## Partial updates
 
-- If you provide an ID to an `UpdateRequest` with a regular document model, the document will be replaced. I.e. null values will be serialized and existing values will be overwritten.
+- An `UpdateRequest` merges the fields serialized in `.doc()` into the stored document. Included nulls clear stored values; omitted fields remain unchanged.
 
-- Instead of an instance of the model of the index, you need to use a `Map<String, Object>` instead where the keys are the keys in the document's `_source` you want to overwrite. Elasticsearch will merge these two and only overwrite the provided keys.
+- Use a `Map<String, Object>` to select the fields to update. Its keys name the fields in the document's `_source`.
 
 - So if you have a model like this and want to overwrite the `author` field alone, while keeping the rest of the document as is:
 
@@ -107,34 +107,16 @@
   );
   ```
 
-- If your model is already the document model which you use in the index and you want to only update fields which are not null, then you can simply map it to a `Map<String, Object>`:
+- To update only non-null fields, convert the model to a map using a null-omitting copy of your application's configured model mapper (`configuredMapper` below). This retains its timestamp serializers:
 
   ```java
   // We map the object onto a Map for partial update (Include.NON_NULL only includes fields with non-null values)
   // I.e. all fields of object 'candidate' which are not null will be added to the map. The rest will be left out.
-  ObjectMapper objectMapper = new ObjectMapper()
+  ObjectMapper objectMapper = configuredMapper.copy()
               .setSerializationInclusion(JsonInclude.Include.NON_NULL);
   Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
   ```
-  
-  Note that if you have `Date` or other special fields then you need a serializer because Elasticsearch expects strings in ISO 8601 format (`yyyy-MM-dd'T'HH:mm:ss.SSSZ`). 
-  
-  ```java
-  public static final ObjectMapper JSON = new ObjectMapper()
-          .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-          .registerModule(new SimpleModule().addSerializer(Date.class, new IsoDateSerializer()));
-  
-  public class IsoDateSerializer extends JsonSerializer<Date> {
-  
-      private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-  
-      @Override
-      public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-          String formattedDate = formatter.format(value);
-          gen.writeString(formattedDate);
-      }
-  }
-  ```
+
   
   
 
@@ -233,11 +215,11 @@
   ingester.flush(); // Manual flush for document #21
   ```
 
-- Update queries are a bit weird. You have to define an `action()` which can include a script for advanced use-cases.
+- Bulk updates use an `action()`, which can also include a script. As above, `configuredMapper` is your application's configured model mapper.
 
   ```java
   // We map the object onto a Map for partial update (Include.NON_NULL only includes fields with non-null values)
-  ObjectMapper objectMapper = new ObjectMapper()
+  ObjectMapper objectMapper = configuredMapper.copy()
               .setSerializationInclusion(JsonInclude.Include.NON_NULL);
   Map<String, Object> partialUpdate = objectMapper.convertValue(candidate, new TypeReference<>() {});
   
@@ -320,13 +302,13 @@
 
   
 
-## Documents with special fields like `Date`
+## Documents with timestamps and other special fields
 
-- The new client seems now to be able to handle `Date` out of the box. just make sure to use the appropriate field type
+- Use `Instant` for timestamps and configure the Elasticsearch client's transport JSON mapper to write UTC strings matching the Elasticsearch date format. Spring Data annotations describe the index mapping; they do not configure Jackson serialization. Do not use `Date` (it makes life harder).
 
   ```java
   @Field(type = FieldType.Date)
-  private Date dateField;
+  private Instant dateField;
   ```
 
 - Other fields like `Pattern` might need some custom serializer & deserializer implementation.
@@ -495,4 +477,3 @@
   ```
 
   
-
